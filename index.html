@@ -7,65 +7,183 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        :root { --tg-theme-bg-color: #f5f5f5; --primary-color: #0088cc; }
-        body { background-color: var(--tg-theme-bg-color); font-family: 'Segoe UI', sans-serif; overflow-x: hidden; }
-        .match-container { background: white; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); padding: 25px; margin-bottom: 20px; border: 1px solid #eee; }
-        .team-box { text-align: center; }
-        .team-logo { width: 60px; height: 60px; background: #eee; border-radius: 50%; margin-bottom: 10px; display: flex; align-items: center; justify-content: center; font-size: 25px; }
-        .score-input { width: 70px; height: 50px; font-size: 24px; font-weight: bold; text-align: center; border: 2px solid #e0e0e0; border-radius: 12px; transition: 0.3s; }
-        .score-input:focus { border-color: var(--primary-color); outline: none; box-shadow: 0 0 10px rgba(0,136,204,0.2); }
-        .vs-badge { background: #f8f9fa; padding: 5px 15px; border-radius: 20px; font-style: italic; color: #777; font-weight: bold; }
-        .btn-send { background: linear-gradient(45deg, #0088cc, #00aaff); border: none; padding: 15px; border-radius: 15px; font-weight: bold; font-size: 18px; color: white; width: 100%; transition: 0.3s; }
-        .btn-send:active { transform: scale(0.98); }
+        :root { --tg-theme-bg-color: #f5f9fc; --primary-color: #0088cc; }
+        body { 
+            background-color: var(--tg-theme-bg-color); 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* توسيط المحتوى أفقياً */
+            min-height: 100vh;
+            margin: 0;
+            padding: 15px;
+        }
+        
+        .container-wrapper {
+            width: 100%;
+            max-width: 500px; /* لضمان عدم تمدد الكارتات بشاشات الآيباد والحاسبة */
+        }
+
+        .match-container { 
+            background: white; 
+            border-radius: 25px; 
+            box-shadow: 0 8px 20px rgba(0,0,0,0.06); 
+            padding: 20px; 
+            margin-bottom: 20px; 
+            border: 1px solid rgba(0,0,0,0.03);
+            transition: 0.3s;
+        }
+
+        /* تنسيق الخانات لتكون بالوسط دائماً */
+        .score-section {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .score-input { 
+            width: 65px; 
+            height: 55px; 
+            font-size: 26px; 
+            font-weight: 800; 
+            text-align: center; 
+            border: 2px solid #edf2f7; 
+            border-radius: 15px; 
+            background: #fdfdfd;
+        }
+
+        .score-input:focus { 
+            border-color: var(--primary-color); 
+            outline: none; 
+            background: #fff;
+        }
+
+        .team-name { font-size: 14px; font-weight: 700; margin-top: 8px; color: #444; }
+        
+        .vs-badge { 
+            font-size: 12px; 
+            color: #999; 
+            font-weight: bold;
+            display: block;
+            margin-top: 5px;
+        }
+
+        .btn-send { 
+            background: linear-gradient(135deg, #0088cc, #005f8d); 
+            border: none; 
+            padding: 18px; 
+            border-radius: 20px; 
+            font-weight: bold; 
+            color: white; 
+            width: 100%;
+            box-shadow: 0 5px 15px rgba(0,136,204,0.3);
+        }
+
+        /* لودينج بسيط */
+        #loader { text-align: center; padding: 50px; color: #0088cc; font-weight: bold; }
     </style>
 </head>
-<body class="p-3">
+<body>
 
-    <div class="text-center mb-4">
-        <h3 style="color: #333;">بطولة التوقعات 🏆</h3>
-        <p class="text-muted">أدخل توقعك للمباراة القادمة</p>
-    </div>
-
-    <div class="match-container">
-        <div class="row align-items-center">
-            <div class="col-4 team-box">
-                <div class="team-logo mx-auto">🇮🇶</div>
-                <div class="fw-bold">العراق</div>
-            </div>
-            
-            <div class="col-4 text-center">
-                <div class="d-flex justify-content-between mb-2">
-                    <input type="number" id="home" class="score-input" placeholder="0">
-                    <input type="number" id="away" class="score-input" placeholder="0">
-                </div>
-                <span class="vs-badge">VS</span>
-            </div>
-
-            <div class="col-4 team-box">
-                <div class="team-logo mx-auto">🇯🇵</div>
-                <div class="fw-bold">اليابان</div>
-            </div>
+    <div class="container-wrapper">
+        <div class="text-center mb-4">
+            <h3 style="color: #222; font-weight: 800;">توقعات اليوم ⚽</h3>
+            <p class="text-muted small">توقع النتائج واجمع النقاط مع ربعك</p>
         </div>
-        <button class="btn btn-send mt-4" onclick="submitData()">تثبيت التوقع ✅</button>
+
+        <div id="matches-list">
+            <div id="loader">جاري جلب مباريات اليوم... 🔃</div>
+        </div>
+
+        <button id="submit-btn" class="btn btn-send mt-3" onclick="submitData()" style="display: none;">تثبيت كل التوقعات ✅</button>
     </div>
 
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
-        tg.MainButton.hide();
 
-        function submitData() {
-            const h = document.getElementById('home').value;
-            const a = document.getElementById('away').value;
+        // دالة جلب اللعبات من API مجاني (مثال)
+        async function fetchMatches() {
+            try {
+                // ملاحظة: هنا استخدمنا API تجريبي، يفضل لاحقاً تربطه بـ API Key خاص بيك
+                const response = await fetch('https://api.football-data.org/v4/matches', {
+                    headers: { 'X-Auth-Token': '617438208d2e42e89301313e794c29a5' } // ضع مفتاحك هنا
+                });
+                const data = await response.json();
+                renderMatches(data.matches);
+            } catch (error) {
+                // إذا الـ API محظور أو خلص الليمت، راح نعرض لعبات تجريبية كـ fallback
+                console.log("استخدام بيانات تجريبية");
+                renderMatches([
+                    { id: 101, homeTeam: { name: 'العراق', shortName: 'IRQ' }, awayTeam: { name: 'اليابان', shortName: 'JPN' } },
+                    { id: 102, homeTeam: { name: 'السعودية', shortName: 'KSA' }, awayTeam: { name: 'كوريا', shortName: 'KOR' } }
+                ]);
+            }
+        }
 
-            if(h === "" || a === "") {
-                tg.showAlert("يا بطل، لازم تملي التوقعات أولاً! ⚽");
+        function renderMatches(matches) {
+            const list = document.getElementById('matches-list');
+            list.innerHTML = ''; // مسح اللودينج
+            
+            if(matches.length === 0) {
+                list.innerHTML = '<div class="alert alert-info text-center">ماكو مباريات اليوم يا بطل!</div>';
                 return;
             }
 
-            const result = { home: h, away: a, match: "Iraq vs Japan" };
-            tg.sendData(JSON.stringify(result)); // إرسال البيانات للبوت
+            matches.forEach(m => {
+                const html = `
+                    <div class="match-container" data-id="${m.id}">
+                        <div class="row align-items-center text-center">
+                            <div class="col-4">
+                                <div class="team-name">${m.homeTeam.name}</div>
+                            </div>
+                            
+                            <div class="col-4">
+                                <div class="score-section">
+                                    <input type="number" class="score-input home-val" placeholder="0">
+                                    <input type="number" class="score-input away-val" placeholder="0">
+                                </div>
+                                <span class="vs-badge">VS</span>
+                            </div>
+
+                            <div class="col-4">
+                                <div class="team-name">${m.awayTeam.name}</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                list.innerHTML += html;
+            });
+            document.getElementById('submit-btn').style.display = 'block';
         }
+
+        function submitData() {
+            let results = [];
+            document.querySelectorAll('.match-container').forEach(card => {
+                let h = card.querySelector('.home-val').value;
+                let a = card.querySelector('.away-val').value;
+                let id = card.getAttribute('data-id');
+                
+                if(h !== "" && a !== "") {
+                    results.push({ matchId: id, home: h, away: a });
+                }
+            });
+
+            if(results.length === 0) {
+                tg.showAlert("على الأقل توقع لعبة وحدة! ⛔");
+                return;
+            }
+
+            // إرسال البيانات للبوت
+            tg.sendData(JSON.stringify({
+                user: tg.initDataUnsafe.user?.first_name || "Unknown",
+                predictions: results
+            }));
+        }
+
+        // تشغيل الجلب عند فتح الصفحة
+        fetchMatches();
     </script>
 </body>
 </html>
