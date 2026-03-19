@@ -3,67 +3,177 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Predictor Pro 2026</title>
+    <title>Match Day Pro | أحمد محمد</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        mainbg: '#050810',
-                        glass: 'rgba(255, 255, 255, 0.03)',
-                        accent: '#00f2ff', // نيون سايان
-                        gold: '#ffae00'
-                    },
-                    backgroundImage: {
-                        'gradient-main': 'linear-gradient(135deg, #050810 0%, #0d1224 100%)',
-                    }
-                }
-            }
-        }
-    </script>
     <style>
-        body {
-            background: fixed no-repeat;
-            background-image: theme('backgroundImage.gradient-main');
-            font-family: 'Inter', system-ui, -apple-system, sans-serif;
-            color: #fff;
-            user-select: none;
-            overflow-x: hidden;
-        }
-        .glass-card {
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 24px;
-        }
-        .score-input {
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: all 0.3s;
-        }
-        .score-input:focus {
-            border-color: #00f2ff;
-            box-shadow: 0 0 10px rgba(0, 242, 255, 0.3);
-            outline: none;
-        }
-        ::-webkit-scrollbar { display: none; }
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap');
         
-        /* حركة الشريط العلوي */
+        body {
+            background: #05070a;
+            color: #fff;
+            font-family: 'Cairo', sans-serif;
+            overflow-x: hidden;
+            background-image: radial-gradient(circle at 50% -20%, #1a2238 0%, #05070a 80%);
+        }
+
+        /* شريط الترحيب المتحرك */
+        .welcome-bar {
+            background: rgba(0, 242, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0, 242, 255, 0.2);
+            white-space: nowrap;
+            overflow: hidden;
+            position: fixed;
+            top: 0; width: 100%; z-index: 100;
+        }
+        .marquee {
+            display: inline-block;
+            animation: marquee 20s linear infinite;
+            padding: 5px 0;
+        }
         @keyframes marquee {
             0% { transform: translateX(100%); }
             100% { transform: translateX(-100%); }
         }
-        .animate-marquee {
-            display: inline-block;
-            animation: marquee 15s linear infinite;
-            white-space: nowrap;
+
+        /* كارت المباراة الزجاجي */
+        .glass-match-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 30px;
+            position: relative;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
+        .glass-match-card:hover {
+            border-color: #00f2ff;
+            box-shadow: 0 0 30px rgba(0, 242, 255, 0.1);
+        }
+
+        /* مدخلات الأهداف نيون */
+        .goal-input {
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            color: #00f2ff;
+            font-size: 2.5rem;
+            font-weight: 900;
+            text-align: center;
+            transition: all 0.3s;
+        }
+        .goal-input:focus {
+            border-color: #00f2ff;
+            background: rgba(0, 242, 255, 0.05);
+            outline: none;
+        }
+
+        /* زر الإرسال الفخم */
+        .btn-neon {
+            background: #00f2ff;
+            color: #05070a;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            box-shadow: 0 0 20px rgba(0, 242, 255, 0.4);
+            border-radius: 20px;
+            transition: all 0.3s;
+        }
+        .btn-neon:active { transform: scale(0.95); }
+
+        /* إخفاء السكرول بار */
+        ::-webkit-scrollbar { display: none; }
     </style>
 </head>
-<body class="p-4 animate__animated animate__fadeIn">
+<body class="pt-12 pb-10 px-4 max-w-lg mx-auto">
 
-    <div class="fixed top-0 left-0 w-full bg-accent/10 border-b border-accent/20 py-1 overflow-hidden z-50 glass">
-        <div class="animate-marquee text-accent text-[10px] font-bold uppercase tracking-widest
+    <div class="welcome-bar">
+        <div class="marquee text-accent font-bold text-xs uppercase tracking-widest">
+            ⚽ أهلاً بكِ في عالم التوقعات المثير... جلب تلقائي للمباريات قبل 3 أيام... كن الأفضل مع نظام أحمد محمد الذكي... ⚽ الإثارة تبدأ الآن...
+        </div>
+    </div>
+
+    <header class="mt-8 mb-10 flex items-center justify-between p-4 glass-match-card">
+        <div class="flex items-center gap-4">
+            <div class="relative">
+                <img id="u_photo" src="https://via.placeholder.com/100" class="w-14 h-14 rounded-full border-2 border-accent shadow-lg">
+                <div class="absolute bottom-0 right-0 w-4 h-4 bg-green-500 rounded-full border-2 border-[#05070a]"></div>
+            </div>
+            <div>
+                <p class="text-[10px] text-accent font-bold uppercase tracking-tighter opacity-70">المحلل الرياضي</p>
+                <h2 id="u_name" class="font-black text-lg">جاري التحميل...</h2>
+            </div>
+        </div>
+        <div class="bg-white/5 p-2 rounded-xl border border-white/10">
+            <svg class="w-6 h-6 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+        </div>
+    </header>
+
+    <main id="match-list" class="space-y-8">
+        <div class="flex items-center gap-3 px-2 mb-4">
+            <span class="w-2 h-8 bg-accent rounded-full"></span>
+            <h3 class="font-black text-xl italic uppercase tracking-wider">مباريات مرتقبة</h3>
+        </div>
+
+        <div class="glass-match-card p-6 animate__animated animate__fadeInUp">
+            <div class="flex justify-between items-center mb-6 text-[10px] text-gray-500 font-bold uppercase">
+                <span class="bg-white/5 px-3 py-1 rounded-full">دوري أبطال أوروبا</span>
+                <span class="text-accent italic">بعد 3 أيام</span>
+            </div>
+
+            <div class="flex items-center justify-between gap-4 mb-8">
+                <div class="flex-1 text-center">
+                    <img src="https://crests.football-data.org/86.png" class="w-20 h-20 mx-auto mb-3 drop-shadow-[0_0_10px_rgba(255,255,255,0.1)]">
+                    <p class="font-black text-xs uppercase tracking-widest">ريال مدريد</p>
+                </div>
+
+                <div class="flex flex-col items-center">
+                    <span class="text-3xl font-black text-white/10 tracking-tighter">VS</span>
+                    <span class="text-[9px] text-accent/50 mt-1">22:00</span>
+                </div>
+
+                <div class="flex-1 text-center">
+                    <img src="https://crests.football-data.org/57.png" class="w-20 h-20 mx-auto mb-3 drop-shadow-[0_0_10px_rgba(255,255,255,0.1)]">
+                    <p class="font-black text-xs uppercase tracking-widest text-gray-300">أرسنال</p>
+                </div>
+            </div>
+
+            <div class="flex gap-4 items-center mb-6">
+                <input type="number" placeholder="0" class="goal-input w-full h-20">
+                <div class="w-4 h-[2px] bg-white/20"></div>
+                <input type="number" placeholder="0" class="goal-input w-full h-20">
+            </div>
+
+            <button onclick="send()" class="btn-neon w-full py-5 text-sm active:scale-95 transition-all">
+                تأكيد التوقع النهائي
+            </button>
+        </div>
+    </main>
+
+    <footer class="mt-16 text-center py-6 border-t border-white/5">
+        <p class="text-[10px] text-gray-500 uppercase tracking-[5px] mb-2">Designed by AI 2026</p>
+        <p class="text-sm font-black text-white/80">حقوق وبرمجة <span class="text-accent underline decoration-accent/30 decoration-2 underline-offset-4">احمد محمد</span></p>
+    </footer>
+
+    <script>
+        const tg = window.Telegram.WebApp;
+        tg.expand();
+        tg.headerColor = '#05070a';
+
+        if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+            const user = tg.initDataUnsafe.user;
+            document.getElementById('u_name').innerText = (user.first_name + " " + (user.last_name || "")).toUpperCase();
+            if (user.photo_url) document.getElementById('u_photo').src = user.photo_url;
+        } else {
+            document.getElementById('u_name').innerText = "المحلل الزائر";
+        }
+
+        function send() {
+            tg.HapticFeedback.impactOccurred('heavy');
+            tg.showConfirm("هل أنت واثق من هذا التوقع؟", (ok) => {
+                if(ok) tg.close();
+            });
+        }
+    </script>
+</body>
+</html>
