@@ -3,18 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Match Day - منصة التوقعات</title>
+    <title>Predictor Pro 2026</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        darkBg: '#070a13',
-                        cardBg: 'rgba(255, 255, 255, 0.04)',
-                        accent: '#00f2ff',
-                        teamText: '#e2e8f0'
+                        mainbg: '#050810',
+                        glass: 'rgba(255, 255, 255, 0.03)',
+                        accent: '#00f2ff', // نيون سايان
+                        gold: '#ffae00'
+                    },
+                    backgroundImage: {
+                        'gradient-main': 'linear-gradient(135deg, #050810 0%, #0d1224 100%)',
                     }
                 }
             }
@@ -22,122 +26,44 @@
     </script>
     <style>
         body {
-            background-color: #070a13;
-            color: white;
-            font-family: system-ui, -apple-system, sans-serif;
+            background: fixed no-repeat;
+            background-image: theme('backgroundImage.gradient-main');
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            color: #fff;
+            user-select: none;
             overflow-x: hidden;
-            -webkit-font-smoothing: antialiased;
         }
-        .glass-effect {
-            backdrop-filter: blur(12px);
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(15px);
             border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 24px;
         }
-        input[type=number]::-webkit-inner-spin-button, 
-        input[type=number]::-webkit-outer-spin-button { 
-            -webkit-appearance: none; margin: 0; 
+        .score-input {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s;
         }
-        .match-card {
-            transition: transform 0.2s ease;
+        .score-input:focus {
+            border-color: #00f2ff;
+            box-shadow: 0 0 10px rgba(0, 242, 255, 0.3);
+            outline: none;
         }
-        .match-card:active {
-            transform: scale(0.98);
+        ::-webkit-scrollbar { display: none; }
+        
+        /* حركة الشريط العلوي */
+        @keyframes marquee {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
+        .animate-marquee {
+            display: inline-block;
+            animation: marquee 15s linear infinite;
+            white-space: nowrap;
         }
     </style>
 </head>
-<body class="p-4 md:p-8 max-w-2xl mx-auto">
+<body class="p-4 animate__animated animate__fadeIn">
 
-    <header class="flex items-center justify-between mb-8 animate__animated animate__fadeInDown">
-        <div class="flex items-center gap-3">
-            <img id="u-img" src="https://via.placeholder.com/100" class="w-12 h-12 rounded-full border-2 border-accent/30 shadow-[0_0_10px_rgba(0,242,255,0.2)]">
-            <div>
-                <p class="text-[10px] text-accent font-bold uppercase tracking-widest">أهلاً بك</p>
-                <h1 id="u-name" class="font-black text-lg">تحميل البيانات...</h1>
-            </div>
-        </div>
-        <div class="bg-accent/10 px-3 py-1 rounded-full border border-accent/20">
-            <span class="text-[10px] text-accent font-bold">2026 SEASON</span>
-        </div>
-    </header>
-
-    <h2 class="text-sm font-black text-white/40 mb-4 uppercase tracking-[3px] border-r-2 border-accent pr-2">المباريات القادمة</h2>
-
-    <div id="matches-list" class="space-y-6">
-        
-        <div class="match-card glass-effect rounded-[2rem] p-6 shadow-2xl relative overflow-hidden">
-            <div class="absolute top-0 right-0 w-32 h-32 bg-accent/5 rounded-full -mr-16 -mt-16 blur-3xl"></div>
-            
-            <div class="flex flex-col gap-6">
-                <div class="flex justify-between items-center text-[10px] font-bold text-white/30 uppercase tracking-widest">
-                    <span>دوري أبطال أوروبا</span>
-                    <span class="text-accent/60">اليوم - 22:00</span>
-                </div>
-
-                <div class="flex justify-between items-center gap-2">
-                    <div class="flex-1 flex flex-col items-center gap-2">
-                        <img src="https://crests.football-data.org/86.png" class="w-14 h-14 md:w-20 md:h-20 object-contain drop-shadow-2xl">
-                        <span class="text-xs md:text-sm font-black text-center text-teamText">ريال مدريد</span>
-                        <input type="number" id="scA-1" placeholder="0" class="w-16 h-14 md:w-20 md:h-20 text-center text-3xl font-black bg-black/40 rounded-2xl border border-white/10 focus:border-accent text-accent transition-all">
-                    </div>
-
-                    <div class="flex flex-col items-center">
-                        <div class="h-10 w-[1px] bg-gradient-to-b from-transparent via-white/10 to-transparent"></div>
-                        <span class="text-xl font-black opacity-10 my-2 text-white">VS</span>
-                        <div class="h-10 w-[1px] bg-gradient-to-b from-white/10 via-white/10 to-transparent"></div>
-                    </div>
-
-                    <div class="flex-1 flex flex-col items-center gap-2">
-                        <img src="https://crests.football-data.org/57.png" class="w-14 h-14 md:w-20 md:h-20 object-contain drop-shadow-2xl">
-                        <span class="text-xs md:text-sm font-black text-center text-teamText">أرسنال</span>
-                        <input type="number" id="scB-1" placeholder="0" class="w-16 h-14 md:w-20 md:h-20 text-center text-3xl font-black bg-black/40 rounded-2xl border border-white/10 focus:border-accent text-accent transition-all">
-                    </div>
-                </div>
-
-                <button onclick="submitPrediction(1)" class="w-full h-14 bg-white text-darkBg font-black rounded-2xl active:scale-95 transition-all text-sm uppercase tracking-widest hover:bg-accent hover:text-darkBg shadow-xl">
-                    تأكيد التوقع
-                </button>
-            </div>
-        </div>
-
-    </div>
-
-    <footer class="mt-12 mb-8 text-center">
-        <p class="text-[10px] text-white/20 uppercase tracking-[4px]">Predict & Win • 2026</p>
-    </footer>
-
-    <script>
-        const tg = window.Telegram.WebApp;
-        tg.expand();
-        tg.headerColor = '#070a13';
-
-        // جلب بيانات المستخدم
-        if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
-            const u = tg.initDataUnsafe.user;
-            document.getElementById('u-name').innerText = u.first_name.toUpperCase();
-            if (u.photo_url) document.getElementById('u-img').src = u.photo_url;
-        }
-
-        function submitPrediction(matchId) {
-            const sA = document.getElementById(`scA-${matchId}`).value;
-            const sB = document.getElementById(`scB-${matchId}`).value;
-
-            if(sA === "" || sB === "") {
-                tg.HapticFeedback.notificationOccurred('error');
-                tg.showAlert("يرجى إدخال النتيجة!");
-                return;
-            }
-
-            tg.HapticFeedback.impactOccurred('medium');
-            tg.showConfirm(`هل أنت متأكد من توقع ${sA} - ${sB}؟`, (ok) => {
-                if(ok) {
-                    // إرسال البيانات للـ Google Sheet
-                    tg.sendData(JSON.stringify({
-                        id: matchId,
-                        scoreA: sA, 
-                        scoreB: sB
-                    }));
-                }
-            });
-        }
-    </script>
-</body>
-</html>
+    <div class="fixed top-0 left-0 w-full bg-accent/10 border-b border-accent/20 py-1 overflow-hidden z-50 glass">
+        <div class="animate-marquee text-accent text-[10px] font-bold uppercase tracking-widest
