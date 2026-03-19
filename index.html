@@ -3,200 +3,109 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>بوت توقعات مباريات كرة القدم PRO</title>
+    <title>منصة توقعات الكرة</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script>
-        // إعدادات Tailwind المخصصة للألوان الرياضية
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        tdark: '#0a0f1e', // خلفية داكنة جداً
-                        tcard: '#161b2e', // خلفية الكروت
-                        tprimary: '#38bdf8', // أزرق سماوي للتفاصيل
-                        taccent: '#f59e0b', // برتقالي ذهبي للنقاط والاستثنائي
-                        tsuccess: '#10b981', // أخضر للفوز
-                    },
-                    borderRadius: {
-                        'xl': '1rem',
-                        '2xl': '1.5rem',
+                        tdark: '#0a0f1e',
+                        tcard: '#161b2e',
+                        tprimary: '#38bdf8',
+                        taccent: '#f59e0b'
                     }
                 }
             }
         }
     </script>
     <style>
-        /* تحسينات إضافية لتجربة المستخدم */
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            -webkit-tap-highlight-color: transparent; /* إلغاء التظليل الأزرق عند اللمس */
-            background-color: #0a0f1e;
-            color: white;
-            overflow-x: hidden;
-        }
-        /* حركة سلسة عند اختيار الفريق */
-        .team-card {
-            transition: all 0.3s ease;
-        }
-        .team-card.selected {
-            border-color: #38bdf8;
-            background-color: rgba(56, 189, 248, 0.1);
-            transform: scale(1.03);
-        }
+        body { font-family: sans-serif; background-color: #0a0f1e; color: white; }
+        .team-card { transition: all 0.3s; border: 2px solid transparent; }
+        .team-card.selected { border-color: #38bdf8; background: rgba(56,189,248,0.1); }
     </style>
 </head>
 <body class="p-4">
 
-    <header class="flex items-center justify-between mb-6 p-4 bg-tcard rounded-2xl shadow-lg">
+    <header class="flex items-center justify-between mb-6 p-4 bg-tcard rounded-2xl border border-gray-800">
         <div class="flex items-center gap-3">
-            <img id="user_photo" src="https://via.placeholder.com/40" alt="User" class="w-10 h-10 rounded-full border-2 border-tprimary">
+            <img id="u_photo" src="https://via.placeholder.com/40" class="w-10 h-10 rounded-full border border-tprimary">
             <div>
-                <h1 id="user_name" class="font-bold text-lg">تحميل...</h1>
-                <p class="text-xs text-gray-400">مرحباً بك في عالم التوقعات</p>
+                <h1 id="u_name" class="font-bold text-lg">جاري التعرف...</h1>
+                <p class="text-xs text-gray-400">نظام التوقعات الذكي</p>
             </div>
         </div>
-        <div class="text-left bg-tdark p-3 rounded-xl border border-gray-700">
-            <span class="text-xs text-gray-400 blocked">نقاطك الكلية</span>
-            <div class="flex items-center gap-1.5 justify-end">
-                <span class="text-2xl font-black text-taccent">1,250</span>
-                <span class="text-xs text-taccent">ن</span>
-            </div>
+        <div class="text-left bg-tdark p-2 rounded-lg border border-gray-700">
+            <span id="u_points" class="text-xl font-bold text-taccent">0</span>
+            <span class="text-[10px] text-gray-400 block">نقطة</span>
         </div>
     </header>
 
-    <nav class="flex gap-2 mb-6 overflow-x-auto pb-2 no-scrollbar">
-        <button class="bg-tprimary text-tdark px-4 py-2 rounded-full text-sm font-bold whitespace-nowrap">الكل</button>
-        <button class="bg-tcard text-gray-300 px-4 py-2 rounded-full text-sm whitespace-nowrap">دوري الأبطال</button>
-        <button class="bg-tcard text-gray-300 px-4 py-2 rounded-full text-sm whitespace-nowrap">كأس العالم</button>
-        <button class="bg-tcard text-gray-300 px-4 py-2 rounded-full text-sm whitespace-nowrap">الدوري الإنجليزي</button>
-    </nav>
-
-    <section>
-        <h2 class="text-xl font-bold mb-4 flex items-center gap-2">
-            <span class="w-2 h-2 bg-tsuccess rounded-full blink"></span>
-            مباريات مفتوحة للتوقع
-        </h2>
-
-        <div class="bg-tcard rounded-2xl p-5 mb-5 shadow-xl border border-gray-800 relative overflow-hidden">
-            <div class="flex justify-between items-center mb-4 text-xs text-gray-400">
-                <span class="flex items-center gap-1.5">
-                    <img src="https://upload.wikimedia.org/wikipedia/en/b/bf/UEFA_Champions_League_logo_2.svg" alt="UCL" class="w-4 h-4">
-                    دوري أبطال أوروبا - النهائي
-                </span>
-                <span id="lock_timer_1" class="text-red-400 font-medium">يقفل بعد: 25:30 د</span>
+    <div id="matches_container">
+        <div class="bg-tcard rounded-2xl p-5 mb-4 border border-gray-800">
+            <div class="flex justify-between text-[10px] text-gray-500 mb-3">
+                <span>دوري أبطال أوروبا</span>
+                <span class="text-red-400">يقفل قبل 30 د من الصافرة</span>
             </div>
 
-            <div class="flex items-center justify-between gap-2 mb-5">
-                <div onclick="selectTeam(1, 'A')" class="team-card A flex-1 text-center p-3 rounded-xl border-2 border-transparent cursor-pointer bg-tdark hover:border-gray-600">
-                    <img src="https://crests.football-data.org/86.png" alt="Real Madrid" class="w-12 h-12 mx-auto mb-2">
-                    <span class="font-bold text-sm blocked">ريال مدريد</span>
+            <div class="flex items-center justify-between mb-4">
+                <div onclick="selectT(1,'A')" id="t1A" class="team-card flex-1 text-center p-2 rounded-xl bg-tdark">
+                    <img src="https://crests.football-data.org/86.png" class="w-10 h-10 mx-auto mb-1">
+                    <p class="text-xs font-bold">ريال مدريد</p>
                 </div>
-                
-                <div class="text-center">
-                    <span class="text-3xl font-black text-gray-600">VS</span>
-                    <p class="text-xs text-gray-500 mt-1">21:00 بتوقيت بغداد</p>
-                </div>
-
-                <div onclick="selectTeam(1, 'B')" class="team-card B flex-1 text-center p-3 rounded-xl border-2 border-transparent cursor-pointer bg-tdark hover:border-gray-600">
-                    <img src="https://crests.football-data.org/57.png" alt="Arsenal" class="w-12 h-12 mx-auto mb-2">
-                    <span class="font-bold text-sm blocked">أرسنال</span>
+                <div class="px-3 font-black text-gray-600 italic">VS</div>
+                <div onclick="selectT(1,'B')" id="t1B" class="team-card flex-1 text-center p-2 rounded-xl bg-tdark">
+                    <img src="https://crests.football-data.org/57.png" class="w-10 h-10 mx-auto mb-1">
+                    <p class="text-xs font-bold">أرسنال</p>
                 </div>
             </div>
 
-            <div class="flex items-center gap-4 bg-tdark p-3 rounded-xl mb-4 border border-gray-700">
-                <div class="flex-1 text-center">
-                    <label class="text-xs text-gray-400 mb-1 blocked">أهداف المدريد</label>
-                    <input type="number" id="score_1_A" min="0" max="9" value="0" class="w-16 h-12 text-center text-2xl font-bold bg-tcard rounded-lg text-tprimary border border-gray-600">
-                </div>
-                <div class="flex-1 text-center">
-                    <label class="text-xs text-gray-400 mb-1 blocked">أهداف الغنرز</label>
-                    <input type="number" id="score_1_B" min="0" max="9" value="0" class="w-16 h-12 text-center text-2xl font-bold bg-tcard rounded-lg text-tprimary border border-gray-600">
-                </div>
+            <div class="flex gap-4 mb-4">
+                <input type="number" id="sc1A" placeholder="0" class="flex-1 bg-tdark border border-gray-700 p-2 rounded-lg text-center font-bold text-tprimary">
+                <input type="number" id="sc1B" placeholder="0" class="flex-1 bg-tdark border border-gray-700 p-2 rounded-lg text-center font-bold text-tprimary">
             </div>
 
-            <div class="flex items-center justify-between gap-3">
-                <button onclick="toggleExceptional(1)" id="btn_exceptional_1" class="flex-1 py-3 px-4 rounded-xl bg-tdark text-gray-400 text-sm font-medium border border-gray-700 hover:bg-gray-800 transition">
-                    ⭐ توقع استثنائي (×2)
-                </button>
-                <button onclick="submitPrediction(1)" class="flex-1 py-3 px-4 rounded-xl bg-tprimary text-tdark text-sm font-bold hover:bg-sky-400 transition shadow-md">
-                    تأكيد التوقع
-                </button>
-            </div>
+            <button onclick="sendPred(1)" class="w-full py-3 bg-tprimary text-tdark font-bold rounded-xl active:scale-95 transition">إرسال التوقع</button>
         </div>
-
-    </section>
-
-    <section class="mt-8 mb-4">
-        <h2 class="text-lg font-bold mb-3 text-gray-400">آخر توقعاتك</h2>
-        <div class="bg-tcard rounded-xl p-4 text-sm text-gray-500 text-center">
-            لا توجد توقعات منتهية حالياً.
-        </div>
-    </section>
+    </div>
 
     <script>
-        // إعدادات التليجرام الويب اب
         const tg = window.Telegram.WebApp;
-        tg.expand(); // توسيع الواجهة لتشمل الشاشة كاملة
-        
-        // جلب معلومات المستخدم الحقيقية
+        tg.expand();
+
+        // 1. إظهار اسم المستخدم الحقيقي وصورته
         if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
-            document.getElementById('user_name').innerText = tg.initDataUnsafe.user.first_name;
-            if (tg.initDataUnsafe.user.photo_url) {
-                document.getElementById('user_photo').src = tg.initDataUnsafe.user.photo_url;
-            }
-        } else {
-            document.getElementById('user_name').innerText = "مستخدم تجريبي";
+            const user = tg.initDataUnsafe.user;
+            document.getElementById('u_name').innerText = user.first_name + (user.last_name ? " " + user.last_name : "");
+            if (user.photo_url) document.getElementById('u_photo').src = user.photo_url;
         }
 
-        // دالة اختيار الفريق الفائز (تجميلية)
-        function selectTeam(matchId, team) {
-            // إلغاء تحديد الفرق الأخرى في نفس المباراة
-            const cards = document.querySelectorAll(`#lock_timer_${matchId}`).parentNode.parentNode.querySelectorAll('.team-card');
-            cards.forEach(card => card.classList.remove('selected'));
+        // 2. اختيار الفريق
+        function selectT(id, side) {
+            document.getElementById(`t${id}A`).classList.remove('selected');
+            document.getElementById(`t${id}B`).classList.remove('selected');
+            document.getElementById(`t${id}${side}`).classList.add('selected');
+        }
+
+        // 3. إرسال التوقع إلى Google Sheets
+        function sendPred(id) {
+            const sA = document.getElementById(`sc${id}A`).value;
+            const sB = document.getElementById(`sc${id}B`).value;
             
-            // تحديد الفريق المختار
-            const selectedCard = document.querySelector(`#lock_timer_${matchId}`).parentNode.parentNode.querySelector(`.team-card.${team}`);
-            selectedCard.classList.add('selected');
-        }
-
-        // دالة تفعيل التوقع الاستثنائي
-        let isExceptional = false;
-        function toggleExceptional(matchId) {
-            const btn = document.getElementById(`btn_exceptional_1`);
-            isExceptional = !isExceptional;
-            if (isExceptional) {
-                btn.classList.remove('bg-tdark', 'text-gray-400');
-                btn.classList.add('bg-taccent', 'text-tdark', 'font-bold');
-                btn.innerText = "⭐ تم تفعيل الاستثنائي!";
-            } else {
-                btn.classList.remove('bg-taccent', 'text-tdark', 'font-bold');
-                btn.classList.add('bg-tdark', 'text-gray-400');
-                btn.innerText = "⭐ توقع استثنائي (×2)";
+            if(sA === "" || sB === "") {
+                tg.showAlert("يرجى إدخال النتيجة كاملة!");
+                return;
             }
-        }
 
-        // دالة إرسال التوقع (للتجربة حالياً)
-        function submitPrediction(matchId) {
-            const scoreA = document.getElementById(`score_${matchId}_A`).value;
-            const scoreB = document.getElementById(`score_${matchId}_B`).value;
-            
-            tg.showConfirm(`هل أنت متأكد من توقعك: ${scoreA} - ${scoreB} ؟`, (ok) => {
-                if (ok) {
-                    tg.showAlert("تم تسجيل توقعك بنجاح! حظاً موفقاً.");
-                    // هنا يتربط بالكود الخلفي (PHP) لإرسال البيانات
+            tg.showConfirm(`توقعك هو ${sA} - ${sB}، هل تريد التأكيد؟`, (ok) => {
+                if(ok) {
+                    // هنا نرسل البيانات لـ Google Script Webhook
+                    tg.sendData(JSON.stringify({match_id: id, scoreA: sA, scoreB: sB}));
+                    tg.close();
                 }
             });
         }
-
-        // إضافة حركة وميض (Blink)
-        const style = document.createElement('style');
-        style.innerHTML = `
-            @keyframes blink { 50% { opacity: 0; } }
-            .blink { animation: blink 1s linear infinite; }
-            .no-scrollbar::-webkit-scrollbar { display: none; }
-        `;
-        document.head.appendChild(style);
     </script>
 </body>
 </html>
